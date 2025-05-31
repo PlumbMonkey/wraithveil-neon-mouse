@@ -1,0 +1,40 @@
+body {
+  background: #000;
+  color: #e0e0ff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+h1 {
+  font-size: 2.5em;
+  margin: 1.2em 0 0.5em;
+  letter-spacing: 0.03em;
+  color: #80ffd6;
+  text-shadow: 0 0 14px #33ffe6, 0 0 2px #444;
+}
+.controls {
+  margin: 2em 0 1em;
+}
+button {
+  font-size: 1.1em;
+  padding: 0.5em 1.4em;
+  margin: 0 0.6em;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #3a6df0, #7fffd4);
+  color: #111;
+  box-shadow: 0 0 9px #7fffd4b0;
+  cursor: pointer;
+  transition: filter 0.2s, box-shadow 0.2s;
+}
+button:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 0 22px #33ffe6bb;
+}
+.note {
+  margin-top: 2.5em;
+  color: #aadbe8;
+  font-style: italic;
+  font-size: 1em;
+}
