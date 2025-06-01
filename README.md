@@ -1,242 +1,136 @@
 # Wraithveil Neon Mouse
 
-A glowing neon mouse trail & orb effect for modern websites. Drop in a single script (and optional CSS) to add dynamic “neon” trails and pulsing orb explosions wherever the user clicks or moves their cursor.
+A glowing neon mouse trail & orb effect for modern websites.
 
 ---
 
 ## Table of Contents
 
-1. [Features](#features)
-2. [Installation](#installation)
-
-   * [Via npm/yarn](#via-npmyarn)
-   * [Via CDN](#via-cdn)
-   * [Manual Download](#manual-download)
-3. [Usage](#usage)
-
-   * [Basic Example](#basic-example)
-   * [With Custom Canvas](#with-custom-canvas)
-   * [API Reference](#api-reference)
-4. [Customization Options](#customization-options)
-5. [Demo](#demo)
-6. [Directory Structure](#directory-structure)
-7. [License](#license)
-8. [Author](#author)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Options](#options)
+- [Examples](#examples)
+- [Development](#development)
+- [License](#license)
+- [Author](#author)
 
 ---
 
 ## Features
 
-* **Glowing neon trail**: A multi-colored trail that follows the mouse, fading out smoothly.
-* **Orb explosion**: Click anywhere to trigger a radial burst of neon particles that rapidly converge back into a pulsing orb at the cursor.
-* **Performance-tuned**: Trail points clear within 50 ms of halting mouse movement; 24 particles zip back with dynamic acceleration.
-* **Easy to integrate**: Single JavaScript file (with optional CSS) — no external dependencies required.
-* **Configurable**: Expose methods to initialize/destroy, choose z-index, pointer-events, or supply your own `<canvas>`.
-
----
+- Draws a glowing neon trail following the user’s mouse movement.
+- Creates an interactive orb that explodes into particles on click and reassembles smoothly.
+- Customizable colors, speeds, and particle counts via simple configuration.
+- Lightweight, dependency-free vanilla JavaScript.
+- Works in modern browsers.
 
 ## Installation
 
-### Via npm/yarn
+You can install via npm:
 
 ```bash
-npm install wraithveil-neon-mouse
-# or
-yarn add wraithveil-neon-mouse
+npm install wraithveil-neon-mouse --save
 ```
 
-Then in your code:
-
-```js
-import { initNeonMouseEffect, destroyNeonMouseEffect } from "wraithveil-neon-mouse";
-```
-
----
-
-### Via CDN
-
-Include the latest release from a CDN (for example, [unpkg.com](https://unpkg.com)):
+Or include the minified script directly in your HTML (from GitHub or your own CDN):
 
 ```html
-<!-- Optional CSS -->
-<link rel="stylesheet" href="https://unpkg.com/wraithveil-neon-mouse@1.0.0/dist/style.css" />
-
-<!-- Script -->
-<script src="https://unpkg.com/wraithveil-neon-mouse@1.0.0/dist/mouseNeon.min.js"></script>
+<script src="dist/mouseNeon.min.js"></script>
 ```
-
-After loading, the global functions `initNeonMouseEffect()` and `destroyNeonMouseEffect()` will be available.
-
----
-
-### Manual Download
-
-1. Download or clone this repository.
-2. Copy `dist/mouseNeon.min.js` (and `dist/mouseNeon.min.js.map`, if desired) into your project.
-3. Optionally copy `src/style.css` if you want included CSS for pointer events, etc.
-
----
 
 ## Usage
 
-### Basic Example
+Initialize the effect with:
+
+```html
+<script>
+  initNeonMouseEffect({
+    zIndex: "9999",       // keep canvas above all elements
+    pointerEvents: "none" // allow clicks through the neon canvas
+  });
+</script>
+```
+
+Call `destroyNeonMouseEffect()` to remove the canvas and event listeners.
+
+## Options
+
+| Option         | Type    | Default | Description                              |
+| -------------- | ------- | ------- | ---------------------------------------- |
+| `canvas`       | `DOM`   | `null`  | Provide an existing `<canvas>` element.  |
+| `zIndex`       | `String`| `"9999"`| CSS z-index for the neon canvas.         |
+| `pointerEvents`| `String`| `"none"`| Set to "none" to allow mouse clicks through the canvas. |
+
+## Examples
+
+See the `examples/index.html` file in this repository for a working demo. Copy or fork it into your own site to experiment.
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Neon Mouse Demo</title>
-  <style>
-    /* (Optional) Basic page styling */
-    body { margin: 0; background: #111; overflow: hidden; }
-  </style>
 </head>
 <body>
-  <!-- 1) Include the minified script -->
+  <button id="startBtn">Start Neon</button>
+  <button id="stopBtn" disabled>Stop Neon</button>
+
   <script src="dist/mouseNeon.min.js"></script>
-
-  <!-- 2) Initialize the effect -->
   <script>
-    initNeonMouseEffect();
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
 
-    // Example: automatically destroy after 15 seconds
-    setTimeout(() => {
+    startBtn.addEventListener('click', () => {
+      initNeonMouseEffect();
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    });
+
+    stopBtn.addEventListener('click', () => {
       destroyNeonMouseEffect();
-    }, 15000);
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    });
   </script>
 </body>
 </html>
 ```
 
----
+## Development
 
-### With Custom Canvas
-
-By default, `initNeonMouseEffect()` inserts a full-screen `<canvas>` at z-index 9999. To use your own `<canvas>` element or change pointer-events/z-index:
-
-```html
-<canvas id="myCustomCanvas"></canvas>
-<script>
-  // Grab your existing <canvas> in the DOM
-  const myCanvas = document.getElementById("myCustomCanvas");
-
-  // Initialize with options
-  initNeonMouseEffect({
-    canvas: myCanvas,
-    zIndex: "5000",           // e.g. to place behind certain elements
-    pointerEvents: "auto"     // allow clicks through or on top
-  });
-</script>
-```
-
----
-
-### API Reference
-
-#### `initNeonMouseEffect([options])`
-
-* **Description**: Creates (or reuses) a `<canvas>` and begins tracking mouse movements & clicks.
-* **Parameters**
-
-  * `options` (object, optional)
-
-    * `canvas` (object): An existing `<canvas>` element.
-    * `zIndex` (string | number): CSS z-index of the canvas (default `"9999"`).
-    * `pointerEvents` (string): CSS `pointer-events` property (default `"none"`).
-
-```js
-initNeonMouseEffect({
-  canvas: document.getElementById("myCanvas"),  
-  zIndex: "8000",             
-  pointerEvents: "auto"       
-});
-```
-
-#### `destroyNeonMouseEffect()`
-
-* **Description**: Cancels the `requestAnimationFrame`, removes the `<canvas>`, and detaches all event listeners.
-* **Usage**:
-
-  ```js
-  destroyNeonMouseEffect();
-  ```
-
----
-
-## Customization Options
-
-At present, the main public API options are:
-
-* **`canvas`**: Supply your own `<canvas>` (pre-sized or styled).
-* **`zIndex`**: String/number to control layering in your page.
-* **`pointerEvents`**: `"none"`, `"auto"`, etc., to allow or block pointer interactions with underlying elements.
-
-If you want to tweak particle count, colors, sizes, or return speed, edit `src/mouseNeon.js` directly:
-
-```js
-// Example tweak in src/mouseNeon.js:
-// Increase particle count
-const ORB_PARTICLE_COUNT = 32; // instead of 24
-
-// Adjust base force or ramp multipliers in the RETURN PHASE logic
-```
-
-After changes, rebuild with:
+If you want to modify or extend the effect:
 
 ```bash
+# Clone the repo
+git clone https://github.com/PlumbMonkey/wraithveil-neon-mouse.git
+
+# Install dev dependencies
+npm install
+
+# Bundle and minify
 npm run build
+
+# Watch for changes
+npm run watch
 ```
 
----
-
-## Demo
-
-A standalone demo page is included under `examples/demo.html`. To view:
-
-1. Ensure you have run `npm run build` (so `dist/mouseNeon.min.js` exists).
-2. Open `examples/demo.html` in your browser (or run VS Code Live Server).
-
-You can see the effect in action and inspect the HTML/JS to learn integration details.
-
----
-
-## Directory Structure
-
-```
-wraithveil-neon-mouse/
-├── dist/
-│   ├── mouseNeon.min.js       # Production bundle (minified)
-│   └── mouseNeon.min.js.map   # Source map
-├── src/
-│   ├── mouseNeon.js           # Unminified source code
-│   └── style.css              # (Optional) CSS for default canvas styling
-├── examples/
-│   └── demo.html              # Self-contained demo page
-├── .gitignore
-├── package.json
-├── README.md
-└── LICENSE
-```
-
-* **`dist/`**: Minified production files.
-* **`src/`**: Human-readable source for development.
-* **`examples/`**: Example/demonstration HTML.
-* **`package.json`**: npm metadata & build scripts.
-* **`LICENSE`**: MIT license text.
-
----
+The source code lives in `src/mouseNeon.js`. The build script (Rollup) outputs to `dist/`.
 
 ## License
 
-This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) for details.
+This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
 
 ---
 
 ## Author
 
-**Your Name**
-Email: [you@yourdomain.com](mailto:you@yourdomain.com)
-Website: [https://yourwebsite.com](https://yourwebsite.com)
+Wraithveil
+
+Email: wraithveilmd@gmail.com  
+Website: https://plumbmonkey.github.io/wraithveil.github.io/neon/index.html
 
 Enjoy adding neon flair to your site! Feel free to open an issue or submit a pull request on GitHub if you find bugs or want to contribute enhancements.
+
